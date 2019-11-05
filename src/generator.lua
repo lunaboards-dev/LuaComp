@@ -49,6 +49,7 @@ local function generate(ast)
          io.stderr:write("ERROR: Internal catastrophic failure, unknown type "..leaf.type.."\n")
          os.exit(1)
       end
+      lua_code = lua_code .. "\n"
    end
    local env = {code = ""}
    local function run_away_screaming(fpos, err)
