@@ -1,0 +1,1 @@
+print("The user who compiled this used "..$(SHELL))

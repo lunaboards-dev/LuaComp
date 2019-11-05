@@ -218,7 +218,7 @@ local function mkast(f, n)
 			add_code()
 			skip(f, 2)
 			local val = ""
-			while peek(f, 2) == "]]" do
+			while peek(f, 2) ~= "]]" do
 				val = val .. nextc(f)
 			end
 			tree[#tree+1] = {type="lua", code=val, file=n, line=lpos}
@@ -227,7 +227,7 @@ local function mkast(f, n)
 			add_code()
 			skip(f, 2)
 			local val = ""
-			while peek(f, 2) == "}]" do
+			while peek(f, 2) ~= "}]" do
 				val = val .. nextc(f)
 			end
 			tree[#tree+1] = {type="lua_r", code=val, file=n, line=lpos}

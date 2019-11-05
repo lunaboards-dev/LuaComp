@@ -5,6 +5,6 @@ function directives.include(env, file)
 	local f = io.open(file, "r")
 	local fast = mkast(f, file)
 	local code = generate(fast)
-	env.code = env.code .. "\n" .. code
+	env.code = env.code .. "\n" .. code .. "\n"
 	return true
 end

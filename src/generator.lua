@@ -27,7 +27,7 @@ local function generate(ast)
    for i=1, #ast do
       local leaf = ast[i]
       if (leaf.type == "lua") then
-         lua_code = lua_code .. code
+         lua_code = lua_code .. leaf.code
       elseif (leaf.type == "directive") then
          local stargs = {}
          for i=1, #leaf.args do
@@ -40,7 +40,7 @@ local function generate(ast)
          end
          lua_code = lua_code .. "call_directive(\""..leaf.file..":"..tostring(leaf.line).."\",\""..leaf.name.."\","..table.concat(stargs, ",")..")"
       elseif (leaf.type == "envvar") then
-         lua_code = lua_code .. "put_env(\""..leaf.file..":"..tostring(leaf.line).."\",\""..leaf.name.."\")"
+         lua_code = lua_code .. "put_env(\""..leaf.file..":"..tostring(leaf.line).."\",\""..leaf.var.."\")"
       elseif (leaf.type == "code") then
          lua_code = lua_code .. "put_code(\""..leaf.file..":"..tostring(leaf.line).."\",\"" .. lua_escape(leaf.data) .. "\")"
       elseif (leaf.type == "lua_r") then
@@ -64,8 +64,8 @@ local function generate(ast)
          run_away_screaming(fpos, er)
       end
    end
-   local function put_env(fpos, env)
-      local e = os.getenv(env)
+   local function put_env(fpos, evar)
+      local e = os.getenv(evar)
       if not e then
          run_away_screaming(fpos, "Enviroment variable `"..env.."' does not exist!")
       end
