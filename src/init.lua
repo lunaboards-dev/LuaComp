@@ -16,6 +16,7 @@
    limitations under the License.
 ]]
 
+--#include "luacomp_vars.lua"
 --#include "ast.lua"
 --#include "generator.lua"
 --#include "directive_provider.lua"
@@ -25,7 +26,7 @@ local argparse = (function()
 --#include "argparse.lua"
 end)()
 
-local parser = argparse(arg[0], "A Lua preprocessor+postprocessor.")
+local parser = argparse(arg[0], "LuaComp v"..LUACOMP_VERSION.."\nA Lua preprocessor+postprocessor.")
 parser:argument("input", "Input file (- for STDIN)")
 parser:option("-O --output", "Output file. (- for STDOUT)", "-")
 parser:option("-m --minifier", "Sets the minifier", "none")
