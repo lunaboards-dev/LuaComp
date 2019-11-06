@@ -22,9 +22,7 @@
 --#include "directive_provider.lua"
 --#include "cfg/minifier_providers.lua"
 
-local argparse = (function()
---#include "argparse.lua"
-end)()
+local argparse = require("argparse")
 
 local parser = argparse(arg[0], "LuaComp v"..LUACOMP_VERSION.."\nA Lua preprocessor+postprocessor.")
 parser:argument("input", "Input file (- for STDIN)")

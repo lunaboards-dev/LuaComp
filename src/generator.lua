@@ -53,7 +53,7 @@ local function generate(ast)
    end
    local env = {code = ""}
    local function run_away_screaming(fpos, err)
-      io.stdout:write("ERROR: "..fps..": "..err.."\n")
+      io.stdout:write("ERROR: "..fpos..": "..err.."\n")
       os.exit(1)
    end
    local function call_directive(fpos, dname, ...)
@@ -68,7 +68,7 @@ local function generate(ast)
    local function put_env(fpos, evar)
       local e = os.getenv(evar)
       if not e then
-         run_away_screaming(fpos, "Enviroment variable `"..env.."' does not exist!")
+         run_away_screaming(fpos, "Enviroment variable `"..evar.."' does not exist!")
       end
       env.code = env.code .. "\""..lua_escape(e).."\""
    end
