@@ -206,6 +206,22 @@ local function mkast(f, n)
 				code = code .. lc
 				ilpos = ilpos+1
 			end
+		elseif (lc == "/" and ilpos == 1) then
+			if (peek(f, 2) == "/#") then --Directive
+				add_code()
+				skip(f, 2)
+				local d, r = parse_directive(f)
+				if not d then
+					parse_error(r)
+				end
+				d.line = lpos
+				d.file = n
+				lpos = lpos+1
+				tree[#tree+1] = d
+			else
+				code = code .. lc
+				ilpos = ilpos+1
+			end
 		elseif (lc == "$" and peek(f) == "(") then
 			add_code()
 			skip(f)
