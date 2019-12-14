@@ -26,6 +26,64 @@ function providers.luamin(cin)
 	local lmh = io.popen("luamin -f "..fn.." 2>&1", "r")
 	local dat = lmh:read("*a")
 	local stat, _, code = lmh:close()
+	os.remove(fn)
+	if (code ~= 0) then
+		return false, dat
+	end
+	return dat
+end
+
+function providers.bython(cin)
+	local fn = os.tmpname()
+	local fo = os.tmpname()
+	local fh = io.open(fn, "w")
+	fh:write(cin)
+	fh:close()
+	local lmh = io.popen("bython -c "..fn.." "..fo.." 2>&1", "r")
+	local out = lmh:read("*a")
+	local stat, _, code = lmh:close()
+	os.remove(fn)
+	if (code ~= 0) then
+		os.remove(fo)
+		return false, out
+	end
+	fh = io.open(fo, "r")
+	local dat = fh:read("*a")
+	fh:close()
+	os.remove(fo)
+	return dat
+end
+
+function providers.bython2(cin)
+	local fn = os.tmpname()
+	local fo = os.tmpname()
+	local fh = io.open(fn, "w")
+	fh:write(cin)
+	fh:close()
+	local lmh = io.popen("bython -c2 "..fn.." "..fo.." 2>&1", "r")
+	local out = lmh:read("*a")
+	local stat, _, code = lmh:close()
+	os.remove(fn)
+	if (code ~= 0) then
+		os.remove(fo)
+		return false, out
+	end
+	fh = io.open(fo, "r")
+	local dat = fh:read("*a")
+	fh:close()
+	os.remove(fo)
+	return dat
+end
+
+function providers.uglify(cin)
+	local fn = os.tmpname()
+	local fh = io.open(fn, "w")
+	fh:write(cin)
+	fh:close()
+	local lmh = io.popen("uglifyjs --compress --mangle -- "..fn.." 2>&1", "r")
+	local dat = lmh:read("*a")
+	local stat, _, code = lmh:close()
+	os.remove(fn)
 	if (code ~= 0) then
 		return false, dat
 	end

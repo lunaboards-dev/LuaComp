@@ -16,6 +16,7 @@
    limitations under the License.
 ]]
 
----#include "directives/define.lua"
---#include "directives/include.lua"
---#include "directives/loadmod.lua"
+--#include "src/directives/define.lua"
+--#include "src/directives/include.lua"
+--#include "src/directives/loadmod.lua"
+--#include "src/directives/error.lua"

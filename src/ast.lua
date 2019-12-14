@@ -41,9 +41,9 @@ local ws = {
 local function parse_hex(f)
 	local lc = " "
 	local hex = ""
-	while (48 <= lc:byte() and lc:byte() <= 57) or (97 <= lc:byte() and lc:byte() <= 102) or (65 <= lc:byte() and lc:byte() <= 70) do
+	while (48 <= lc:byte() and lc:byte() <= 57) or (97 <= lc:byte() and lc:byte() <= 102) or (65 <= lc:byte() and lc:byte() <= 70) and lc do
 		lc = nextc(f)
-		if (48 <= lc:byte() and lc:byte()) <= 57 or (97 <= lc:byte() and lc:byte() <= 102) or (65 <= lc:byte() and lc:byte() <= 70) then
+		if (48 <= lc:byte() and lc:byte()) <= 57 or (97 <= lc:byte() and lc:byte() <= 102) or (65 <= lc:byte() and lc:byte() <= 70) and lc then
 			hex = hex .. lc
 		end
 	end
@@ -53,9 +53,9 @@ end
 local function parse_number(f, c)
 	local lc = " "
 	local num = c
-	while 48 <= lc:byte() and lc:byte() <= 57 do
+	while 48 <= lc:byte() and lc:byte() <= 57 and lc do
 		lc = nextc(f)
-		if (48 <= lc:byte() and lc:byte() <= 57) then
+		if (48 <= lc:byte() and lc:byte() <= 57) and lc then
 			num = num .. lc
 		end
 	end
@@ -79,6 +79,8 @@ local function parse_dblquote(f)
 		local c = nextc(f)
 		if (peek(f) == "\n" or peek(f) == "\r") then
 			return nil, "Unexpected end of line"
+		elseif (not peek(f)) then
+			return nil, "Unexpected end of file"
 		end
 		if (c == "\\") then
 			if (esct[peek(f)]) then
@@ -100,6 +102,8 @@ local function parse_snglquote(f)
 		local c = nextc(f)
 		if (peek(f) == "\n" or peek(f) == "\r") then
 			return nil, "Unexpected end of line"
+		elseif (not peek(f)) then
+			return nil, "Unexpected end of file"
 		end
 		if (c == "\\") then
 			if (esct[peek(f)]) then
@@ -120,6 +124,8 @@ local function parse_envarg(f)
 	while peek(f) ~= ")" do
 		if (peek(f) == "\n" or peek(f) == "\r") then
 			return nil, "Unexpected end of line"
+		elseif (not peek(f)) then
+			return nil, "Unexpected end of file"
 		end
 		val = val .. nextc(f)
 	end
@@ -166,6 +172,14 @@ local function parse_directive(f)
 			local val = parse_envarg(f)
 			if not os.getenv(val) then return nil, "Enviroment variable `"..val.."' does not exist." end
 			args[#args+1] = os.getenv(val)
+		elseif lc == "@" and peek(f, 2) == "[{" then
+			skip(f, 2)
+			local val = ""
+			while peek(f, 2) ~= "}]" do
+				val = val .. nextc(f)
+			end
+			args[#args+1] = {type="lua_var", val}
+			skip(f, 2)
 		elseif not ws[lc] then
 			return nil, "Syntax error"
 		end
@@ -247,6 +261,24 @@ local function mkast(f, n)
 				val = val .. nextc(f)
 			end
 			tree[#tree+1] = {type="lua_r", code=val, file=n, line=lpos}
+			skip(f, 2)
+		elseif (lc == "$" and peek(f, 2) == "[[") then
+			add_code()
+			skip(f, 2)
+			local val = ""
+			while peek(f, 2) ~= "]]" do
+				val = val .. nextc(f)
+			end
+			tree[#tree+1] = {type="shell", code=val, file=n, line=lpos}
+			skip(f, 2)
+		elseif (lc == "$" and peek(f, 2) == "[{") then
+			add_code()
+			skip(f, 2)
+			local val = ""
+			while peek(f, 2) ~= "}]" do
+				val = val .. nextc(f)
+			end
+			tree[#tree+1] = {type="shell_r", code=val, file=n, line=lpos}
 			skip(f, 2)
 		elseif (lc == "\r" or lc == "\n") then
 			if (lc == "\r" and peek(f) == "\n") then
