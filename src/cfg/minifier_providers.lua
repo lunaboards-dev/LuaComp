@@ -16,6 +16,11 @@
    limitations under the License.
 ]]
 
+local postproc_paths = {
+	"/usr/share/luacomp/postproc",
+	os.getenv("HOME").."/.local/share/luacomp/postproc"
+}
+
 local providers = {}
 
 function providers.luamin(cin)
@@ -92,4 +97,27 @@ end
 
 function providers.none(cin)
 	return cin
+end
+
+setmetatable(providers, {__index=function(t, i)
+	for i=1, #postproc_paths do
+		if (os.execute("stat "..postproc_paths[i].."/"..i..".lua 1>/dev/null 2>&1")) then
+			providers[i] = loadfile(postproc_paths[i].."/"..i..".lua")()
+			return providers[i]
+		end
+	end
+end})
+
+local function preload_providers()
+	--Do this in the best way possible
+	for i=1, #postproc_paths do
+		if (os.execute("stat "..postproc_paths[i].."1>/dev/null 2>&1")) then
+			local fh = io.popen("ls "..postproc_paths[i], "r")
+			for line in fh:lines() do
+				if (line:match("%.lua$")) then
+					providers[line:sub(1, #line-4)] = loadfile(postproc_paths[i].."/"..line)()
+				end
+			end
+		end
+	end
 end

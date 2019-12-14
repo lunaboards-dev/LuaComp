@@ -16,7 +16,31 @@
    limitations under the License.
 ]]
 
+--#include "src/cfg/directive_providers.lua"
 --#include "src/directives/define.lua"
 --#include "src/directives/include.lua"
 --#include "src/directives/loadmod.lua"
 --#include "src/directives/error.lua"
+
+setmetatable(directives, {__index=function(t, i)
+   for i=1, #directive_paths do
+      if (os.execute("stat "..directive_paths[i].."/"..i..".lua 1>/dev/null 2>&1")) then
+         directives[i] = loadfile(directive_paths[i].."/"..i..".lua")()
+         return directives[i]
+      end
+   end
+end})
+
+local function preload_directives()
+   --Do this in the best way possible
+   for i=1, #directive_paths do
+      if (os.execute("stat "..directive_paths[i].." 1>/dev/null 2>&1")) then
+         local fh = io.popen("ls "..directive_paths[i], "r")
+         for line in fh:lines() do
+            if (line:match("%.lua$")) then
+               directives[line:sub(1, #line-4)] = loadfile(directive_paths[i].."/"..line)()
+            end
+         end
+      end
+   end
+end

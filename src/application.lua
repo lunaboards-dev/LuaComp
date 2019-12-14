@@ -15,13 +15,15 @@ end
 --#include "src/directive_provider.lua"
 --#include "src/cfg/minifier_providers.lua"
 
-local parser = argparse(arg[0], "LuaComp v"..LUACOMP_VERSION.."\nA Lua preprocessor+postprocessor.")
+local parser = argparse(arg[0], "LuaComp v"..LUACOMP_VERSION.."\nA preprocessor+postprocessor written in Lua.")
 parser:argument("input", "Input file (- for STDIN)")
 parser:option("-O --output", "Output file. (- for STDOUT)", "-")
-parser:option("-m --minifier", "Sets the minifier", "none")
+parser:option("-m --minifier", "Sets the postprocessor", "none")
 parser:option("-x --executable", "Makes the script an executable (default: current lua version)"):args "?"
 parser:flag("--generator-code", "Outputs only the code from the generator.")
 parser:flag("--verbose", "Verbose output. (Debugging)"):action(function() VERBOSE=true end)
+parser:flag("--post-processors", "Lists postprocessors"):action(function() preload_providers() for k, v in pairs(providers) do print(k) end os.exit(0) end)
+parser:flag("--directives", "Lists directives"):action(function() preload_directives() for k, v in pairs(directives) do print(k) end os.exit(0) end)
 parser:flag("-v --version", "Prints the version and exits"):action(function()
 	print(LUACOMP_VERSION)
 	os.exit(0)
@@ -47,14 +49,14 @@ local ocode = generate(ast, args.generator_code)
 local minifier = providers[args.minifier]
 dprint("Minifier: "..args.minifier, minifier)
 if not minifier then
-	io.stderr:write("ERROR: Minifier `"..args.minifier.."' not found!\n")
+	io.stderr:write("ERROR: Postprocessor `"..args.minifier.."' not found!\n")
 	os.exit(1)
 end
 dprint("Running...")
 local rcode, err = minifier(ocode)
 
 if (not rcode) then
-	io.stderr:write("ERROR: Error for minifier `"..args.minifier.."': \n")
+	io.stderr:write("ERROR: Error for postprocessor `"..args.minifier.."': \n")
 	io.stderr:write(err)
 	os.exit(1)
 end

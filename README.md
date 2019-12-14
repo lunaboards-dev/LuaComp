@@ -1,20 +1,12 @@
 # LuaComp
-A general purpose Lua preprocessor and minifier.
+A general purpose preprocessor and postprocessor written in Lua.
 
 ## Building
-To build, either execute `luapreproc` or `luacomp` on src/init.lua
-
-### luapreproc
-Execute `luapreproc init.lua ../luacomp.lua`
-
-### luacomp
-Execute `luacomp init.lua -xO ../luacomp.lua`
-
-***NOTE***: Do not use a minifier, it breaks argparse!
+See manual/README.md
 
 ## How-To
 
-### Merging Lua source files
+### Merging source files
 ```lua
 -- myfile.lua
 local my_lib = {}
