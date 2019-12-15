@@ -22,12 +22,31 @@ parser:option("-m --minifier", "Sets the postprocessor", "none")
 parser:option("-x --executable", "Makes the script an executable (default: current lua version)"):args "?"
 parser:flag("--generator-code", "Outputs only the code from the generator.")
 parser:flag("--verbose", "Verbose output. (Debugging)"):action(function() VERBOSE=true end)
-parser:flag("--post-processors", "Lists postprocessors"):action(function() preload_providers() for k, v in pairs(providers) do print(k) end os.exit(0) end)
-parser:flag("--directives", "Lists directives"):action(function() preload_directives() for k, v in pairs(directives) do print(k) end os.exit(0) end)
+parser:flag("--post-processors", "Lists postprocessors"):action(function()
+	preload_providers()
+	local provs = {}
+	for k, v in pairs(providers) do
+		provs[#provs+1] = k
+	end
+	table.sort(provs)
+	print(table.concat(provs, "\n"))
+	os.exit(0)
+end)
+parser:flag("--directives", "Lists directives"):action(function()
+	preload_directives()
+	local dirs = {}
+	for k, v in pairs(directives) do
+		dirs[#dirs+1] = k
+	end
+	table.sort(dirs)
+	print(table.concat(dirs, "\n"))
+	os.exit(0)
+end)
 parser:flag("-v --version", "Prints the version and exits"):action(function()
 	print(LUACOMP_VERSION)
 	os.exit(0)
 end)
+parser:add_complete()
 local args = parser:parse()
 local file = args.input
 _sv("LUACOMP_MINIFIER", args.minifier)

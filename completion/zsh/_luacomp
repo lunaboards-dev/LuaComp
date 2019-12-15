@@ -1,0 +1,24 @@
+#compdef luacomp
+
+_luacomp() {
+  local -a options=(
+    {-h,--help}"[Show this help message and exit]"
+    {-O,--output}"[Output file]: :_files"
+    {-m,--minifier}"[Sets the postprocessor (default\: none)]: :( ${(f)'luacomp --post-processors'} )"
+    {-x,--executable}"[Makes the script an executable (default\: current lua version)]: :_path_commands"
+    "--generator-code[Outputs only the code from the generator]"
+    "--verbose[Verbose output]"
+    "--post-processors[Lists postprocessors]"
+    "--directives[Lists directives]"
+    {-v,--version}"[Prints the version and exits]"
+    "--completion[Output a shell completion script for the specified shell]: :(bash zsh fish)"
+  )
+  _arguments -s -S \
+    $options \
+    ": :_files" \
+    && return 0
+
+  return 1
+}
+
+_luacomp
