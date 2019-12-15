@@ -1,11 +1,16 @@
 #compdef luacomp
 
+_luacomp_postproc() {
+	procs=( ${(@f)"$(luacomp --post-processors)"} )
+	compadd -a procs
+}
+
 _luacomp() {
   local -a options=(
     {-h,--help}"[Show this help message and exit]"
     {-O,--output}"[Output file]: :_files"
-    {-m,--minifier}"[Sets the postprocessor (default\: none)]: :( ${(f)'luacomp --post-processors'} )"
-    {-x,--executable}"[Makes the script an executable (default\: current lua version)]: :_path_commands"
+    {-m,--minifier}"[Sets the postprocessor]: :_luacomp_postproc"
+    {-x,--executable}"[Makes the script an executable]: :_path_commands"
     "--generator-code[Outputs only the code from the generator]"
     "--verbose[Verbose output]"
     "--post-processors[Lists postprocessors]"
