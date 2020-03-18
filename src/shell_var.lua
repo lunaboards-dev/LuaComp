@@ -1,4 +1,4 @@
-local svar = {}
+svar = {}
 
 local svars = {}
 

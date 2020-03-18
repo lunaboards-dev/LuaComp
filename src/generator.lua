@@ -142,7 +142,7 @@ local function generate(ast, gencode)
    fenv.put_svar = put_svar
    fenv.put_shell_out = put_shell_out
    fenv._GENERATOR=env
-   local func = assert(load(lua_code, "=(generated code)", "t", fenv))
+   local func = assert(load(lua_code, "=(generated code: "..ast.file..")", "t", fenv))
    func()
    return env.code
 end
