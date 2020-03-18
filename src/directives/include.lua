@@ -6,6 +6,6 @@ function directives.include(env, file)
 	local fast = mkast(f, file)
 	fast.file = file
 	local code = generate(fast)
-	env.code = env.code .. "\n" .. code .. "\n"
+	env.code = env.code .. code .. "\n"
 	return true
 end

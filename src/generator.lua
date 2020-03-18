@@ -104,8 +104,8 @@ local function generate(ast, gencode)
       for k, v in pairs(vars) do
          vstr = vstr .. k.."=".."\""..svar_escape(v).."\" "
       end
-      dprint("Shell", vstr .. f.." 2>"..tname)
-      local h = io.popen(vstr .. f.." 2>"..tname, "r")
+      dprint("Shell", vstr .. f.." "..tname)
+      local h = io.popen(vstr .. f.." "..tname, "r")
       local output = h:read("*a"):gsub("\n$", "")
       local ok, sig, code = h:close()
       fh = io.open(tname, "r")

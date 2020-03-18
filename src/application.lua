@@ -62,7 +62,7 @@ else
 end
 dprint("Generating AST...")
 local ast = mkast(f, file)
-ast.file = f
+ast.file = file
 dprint("Generating code...")
 local ocode = generate(ast, args.generator_code)
 

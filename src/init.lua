@@ -18,4 +18,3 @@
 local argparse = require("argparse")
 
 --#include "src/application.lua"
----#include "src/application.lua" @[{test}]
