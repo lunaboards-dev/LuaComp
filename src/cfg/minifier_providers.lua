@@ -38,7 +38,7 @@ function providers.luamin(cin)
 --	io.stderr:write("DEBUG: ", "luamin -f "..fn.." 2>&1", "\n")
 	local dat = lmh:read("*a")
 	local stat, _, code = lmh:close()
-	--os.remove(fn)
+	os.remove(fn)
 	if (code ~= 0) then
 		return false, dat
 	end
