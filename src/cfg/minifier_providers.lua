@@ -25,13 +25,20 @@ local providers = {}
 
 function providers.luamin(cin)
 	local fn = os.tmpname()
+--	io.stderr:write("DEBUG: ",fn,"\n")
 	local fh = io.open(fn, "w")
 	fh:write(cin)
 	fh:close()
-	local lmh = io.popen("luamin -f "..fn.." 2>&1", "r")
+	-- I have no idea why luamin keeps throwing errors in my buildscript
+	-- if I make this `luamin -f <tmpfile>` and I have no fucking clue as
+	-- to why this fixes it, but I guess I shouldn't complain. But I will
+	-- anyways. What the actual fuck is this and what the actual fuck was
+	-- that error?
+	local lmh = io.popen("cat \""..fn.."\" | luamin -c", "r")
+--	io.stderr:write("DEBUG: ", "luamin -f "..fn.." 2>&1", "\n")
 	local dat = lmh:read("*a")
 	local stat, _, code = lmh:close()
-	os.remove(fn)
+	--os.remove(fn)
 	if (code ~= 0) then
 		return false, dat
 	end
