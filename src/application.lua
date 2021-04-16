@@ -15,6 +15,7 @@ end
 --#include "src/directive_provider.lua"
 --#include "src/cfg/minifier_providers.lua"
 
+local argparse = require("argparse")
 local parser = argparse(arg[0], "LuaComp v"..LUACOMP_VERSION.."\nA preprocessor+postprocessor written in Lua.")
 parser:argument("input", "Input file (- for STDIN)")
 parser:option("-O --output", "Output file. (- for STDOUT)", "-")
@@ -46,7 +47,7 @@ parser:flag("-v --version", "Prints the version and exits"):action(function()
 	print(LUACOMP_VERSION)
 	os.exit(0)
 end)
-parser:add_complete()
+-- parser:add_complete()
 local args = parser:parse()
 local file = args.input
 _sv("LUACOMP_MINIFIER", args.minifier)
