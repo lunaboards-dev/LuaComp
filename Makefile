@@ -1,9 +1,7 @@
 ifeq ($(OS),Windows_NT)
-	export HOME = %appdata%
-
 	# If you're using Windows, change the path to wherever you put LuaComp in.
 	COMMAND = lua53 "./luacomp.lua"
-	# COMMAND = lua53 "C:/Standalone Programs/luacomp-5.3.lua"
+	# COMMAND = lua53 "C:/Standalone Programs/luacomp.lua"
 else
 	
 	COMMAND = luacomp

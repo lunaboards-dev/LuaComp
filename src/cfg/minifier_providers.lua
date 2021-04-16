@@ -16,10 +16,13 @@
    limitations under the License.
 ]]
 
-local postproc_paths = {
-	"/usr/share/luacomp/postproc",
-	os.getenv("HOME").."/.local/share/luacomp/postproc"
-}
+local postproc_paths = {}
+if os.getenv("OS") == "Windows_NT" then
+	-- table.insert(postproc_paths, os.getenv("appdata") .. "/luacomp/postproc")
+else
+	table.insert(postproc_paths, "/usr/share/luacomp/postproc")
+	table.insert(postproc_paths, os.getenv("HOME") .. "/.local/share/luacomp/postproc")
+end
 
 local providers = {}
 
