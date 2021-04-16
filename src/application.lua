@@ -15,7 +15,6 @@ end
 --#include "src/directive_provider.lua"
 --#include "src/cfg/minifier_providers.lua"
 
-local argparse = require("argparse")
 local parser = argparse(arg[0], "LuaComp v"..LUACOMP_VERSION.."\nA preprocessor+postprocessor written in Lua.")
 parser:argument("input", "Input file (- for STDIN)")
 parser:option("-O --output", "Output file. (- for STDOUT)", "-")

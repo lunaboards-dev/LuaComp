@@ -9,7 +9,7 @@ endif
 
 build:
 	@echo Building LuaComp...
-	@${COMMAND} ./src/application.lua -O ./luacomp.lua
+	@${COMMAND} ./src/init.lua -O ./luacomp.lua
 
 clean:
 	ifeq ($(OS),Windows_NT)
