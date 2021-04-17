@@ -17,6 +17,13 @@ luacomp -xlua5.3 -mluamin -O ~/bin/luacomp src/init.lua
 chmod +x ~/bin/luacomp
 ```
 
+## Make
+```sh
+make
+# Optional install(*nix only)
+make install
+```
+
 ## By hand
 Ha, no.
 
@@ -50,7 +57,11 @@ Options:
    -v, --version         Prints the version and exits
 ```
 # Directives
-LuaComp currently ships with four built-in directives. More directives can be installed at `/usr/share/luacomp/directives` and `~/.local/share/luacomp/directives`.
+LuaComp currently ships with four built-in directives. More directives can be installed at these directories:
+
+Linux: `/usr/share/luacomp/directives` and `~/.local/share/luacomp/directives`.
+
+Windows: `%appdata%\luacomp\directives`
 
 ## include
 Usage: `--#include "path"`
@@ -70,18 +81,22 @@ Usage `--#loadmod "lua_file.lua"`
 Loads a directive module. Don't use this. I just don't want to have to bump the major version number.
 
 # Postprocessors
-LuaComp currently ships with built-in support for three postprocessors. More can be installed at `/usr/share/luacomp/postproc` and `~/.local/share/luacomp/postproc`
+LuaComp currently ships with built-in support for three postprocessors. More postprocessors can be installed at these directories:
+
+Linux: `/usr/share/luacomp/postproc` and `~/.local/share/luacomp/postproc`
+
+Windows: `%appdata%\luacomp\postproc`
 
 ## luamin
-Language: Lua 5.1 to 5.3
+Language: Lua 5.1 to 5.3<br>
 Minifies Lua.
 
 ## uglify
-Language: JavaScript
+Language: JavaScript<br>
 Minifies JS. Options are `--compress --mangle`.
 
 ## bython(2)
-Language: Bython (Python 3.x and 2.x)
+Language: Bython (Python 3.x and 2.x)<br>
 Turns Bython into Python.
 
 # Syntax
