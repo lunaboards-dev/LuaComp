@@ -1,15 +1,13 @@
 svar = {}
 
-local svars = {}
+do
+	local stdlib = require("posix.stdlib")
 
-function svar.get(var)
-	return svars[var] or os.getenv(var)
-end
+	function svar.get(var)
+		return os.getenv(var)
+	end
 
-function svar.set(var, val)
-	svars[var] = tostring(val)
-end
-
-function svar.get_all()
-	return svars
+	function svar.set(var, val)
+		return stdlib.setenv(var, val and tostring(val) or nil)
+	end
 end

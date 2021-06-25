@@ -3,19 +3,18 @@ local function dprint(...)
 	for i=1, #args do
 		args[i] = tostring(args[i])
 	end
-	if (VERBOSE) then
+	if (false) then
 		io.stderr:write("DEBUG\t"..table.concat(args,"\t"),"\n")
 	end
 end
 
 --#include "src/shell_var.lua"
 --#include "src/luacomp_vars.lua"
---#include "src/ast.lua"
---#include "src/generator.lua"
+--#include "src/libluacomp.lua"
 --#include "src/directive_provider.lua"
 --#include "src/cfg/minifier_providers.lua"
 
-local parser = argparse(arg[0], "LuaComp v"..LUACOMP_VERSION.."\nA preprocessor+postprocessor written in Lua.")
+local parser = argparse(arg[0]:match("[^/]+$"), "LuaComp v"..LUACOMP_VERSION.."\nA preprocessor+postprocessor written in Lua.")
 parser:argument("input", "Input file (- for STDIN)")
 parser:option("-O --output", "Output file. (- for STDOUT)", "-")
 parser:option("-m --minifier", "Sets the postprocessor", "none")
@@ -60,11 +59,7 @@ if (file ~= "-") then
 else
 	f = io.stdin
 end
-dprint("Generating AST...")
-local ast = mkast(f, file)
-ast.file = file
-dprint("Generating code...")
-local ocode = generate(ast, args.generator_code)
+local ocode = luacomp.process_file(f, (file == "-") and "stdin" or file, args.generator_code)
 
 local minifier = providers[args.minifier]
 dprint("Minifier: "..args.minifier, minifier)
@@ -96,4 +91,4 @@ if (args.executable) then
 end
 of:write(rcode)
 of:close()
-f:close()
+--f:close()
