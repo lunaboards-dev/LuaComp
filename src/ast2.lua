@@ -87,8 +87,7 @@ do
 	function ast.parser_error(str, err)
 		local y, x = str:get_yx()
 		--print(y, x)
-		io.stderr:write(string.format("%s(%d:%d): %s\n", str.file, y or 0, x or 0, err))
-		os.exit(1)
+		lc_error(@[{_GENERATOR.fname}], string.format("%s(%d:%d): %s\n", str.file, y or 0, x or 0, err))
 	end
 
 	function ast.unescape(escaped_string)
@@ -306,7 +305,7 @@ do
 				local c = str:peek()
 				if c ~= " " and c ~= "\n" and c ~= "" then
 					str:set(apos)
-					ast.parser_error(str, "malformed string, got "..c)
+					ast.parser_error(str, "malformed string")
 				end
 				table.insert(args, sval)
 			elseif str:peek() == "\'" then
@@ -333,7 +332,7 @@ do
 				local c = str:peek()
 				if c ~= " " and c ~= "\n" and c ~= "" then
 					str:set(apos)
-					ast.parser_error(str, "malformed code block, got "..c)
+					ast.parser_error(str, "malformed code block")
 				end
 				table.insert(args, {type="lua_span", val=sval})
 			elseif str:peek() == "\n" then

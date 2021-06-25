@@ -1,7 +1,6 @@
 function directives.include(env, file)
-	if (not os.execute("stat "..file..">/dev/null")) then
-		return false, "File `"..file.."' does not exist!"
-	end
+	local sr, err = stat.stat(file)
+	if not sr then return false, err end
 	--[[local f = io.open(file, "r")
 	local fast = mkast(f, file)
 	fast.file = file

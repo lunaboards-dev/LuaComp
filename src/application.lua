@@ -8,6 +8,9 @@ local function dprint(...)
 	end
 end
 
+local stat = require("posix.sys.stat")
+local dirent = require("posix.dirent")
+
 --#include "src/shell_var.lua"
 --#include "src/luacomp_vars.lua"
 --#include "src/libluacomp.lua"
@@ -51,11 +54,9 @@ local file = args.input
 _sv("LUACOMP_MINIFIER", args.minifier)
 local f
 if (file ~= "-") then
+	local sr, er = stat.stat(file)
+	if not sr then lc_error("luacomp", er) end
 	f = io.open(file, "r")
-	if not f then
-		io.stderr:write("ERROR: File `"..file.."' does not exist!\n")
-		os.exit(1)
-	end
 else
 	f = io.stdin
 end
@@ -64,16 +65,18 @@ local ocode = luacomp.process_file(f, (file == "-") and "stdin" or file, args.ge
 local minifier = providers[args.minifier]
 dprint("Minifier: "..args.minifier, minifier)
 if not minifier then
-	io.stderr:write("ERROR: Postprocessor `"..args.minifier.."' not found!\n")
-	os.exit(1)
+	lc_error("luacomp", "Postprocessor "..args.minifier.." not found!")
+	--io.stderr:write("ERROR: Postprocessor `"..args.minifier.."' not found!\n")
+	--os.exit(1)
 end
 dprint("Running...")
 local rcode, err = minifier(ocode)
 
 if (not rcode) then
-	io.stderr:write("ERROR: Error for postprocessor `"..args.minifier.."': \n")
-	io.stderr:write(err)
-	os.exit(1)
+	--io.stderr:write("ERROR: Error for postprocessor `"..args.minifier.."': \n")
+	--io.stderr:write(err)
+	--os.exit(1)
+	lc_error(args.minifier, "Postprocessor error:\n"..err)
 end
 
 local of

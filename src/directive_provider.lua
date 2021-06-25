@@ -24,9 +24,9 @@
 
 setmetatable(directives, {__index=function(t, i)
    for i=1, #directive_paths do
-      if (os.execute("stat "..directive_paths[i].."/"..i..".lua 1>/dev/null 2>&1")) then
-         directives[i] = loadfile(directive_paths[i].."/"..i..".lua")()
-         return directives[i]
+      if stat.stat(directive_paths[i].."/"..i..".lua") then
+         providers[i] = loadfile(directive_paths[i].."/"..i..".lua")()
+         return providers[i]
       end
    end
 end})
@@ -34,11 +34,10 @@ end})
 local function preload_directives()
    --Do this in the best way possible
    for i=1, #directive_paths do
-      if (os.execute("stat "..directive_paths[i].." 1>/dev/null 2>&1")) then
-         local fh = io.popen("ls "..directive_paths[i], "r")
-         for line in fh:lines() do
-            if (line:match("%.lua$")) then
-               directives[line:sub(1, #line-4)] = loadfile(directive_paths[i].."/"..line)()
+      if stat.stat(directive_paths[i]) then
+         for ent in dirent.files(directive_paths[i]) do
+            if ent:match("%.lua$") then
+               providers[ent:sub(1, #ent-4)] = loadfile(directive_paths[i].."/"..ent)()
             end
          end
       end

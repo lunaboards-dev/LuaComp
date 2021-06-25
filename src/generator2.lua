@@ -38,7 +38,7 @@ do
 	end
 
 	function generator.run_gcode(fname, gcode)
-		local env = {code = ""}
+		local env = {code = "", fname=fname}
 		local fenv = {}
 		for k, v in pairs(_G) do
 			fenv[k] = v
@@ -46,9 +46,9 @@ do
 		fenv._G = fenv
 		fenv._GENERATOR = env
 		function fenv.call_directive(dname, ...)
-			if not directives[dname] then error("invalid directive "..dname) end
+			if not directives[dname] then lc_error(@[{_GENERATOR.fname}], "invalid directive "..dname) end
 			local r, er = directives[dname](env, ...)
-			assert(r, er)
+			if not r then lc_error(@[{_GENERATOR.fname}], er) end
 		end
 
 		function fenv.write_out(code)

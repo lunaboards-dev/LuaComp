@@ -3,6 +3,37 @@ local luacomp = {}
 
 local directives = {}
 
+local unistd = require("posix.unistd")
+
+local function lc_error(name, msg)
+	if unistd.isatty(2) then
+		io.stderr:write(string.format("\27[90;1m(%s) \27[31;22m%s\27[0m\n", name, msg))
+	else
+		io.stderr:write(string.format("(%s) %s\n", name, msg))
+	end
+	os.exit(1)
+end
+
+local function lc_warning(name, msg)
+	if unistd.isatty(2) then
+		io.stderr:write(string.format("\27[90;1m(%s) \27[33;22m%s\27[0m\n", name, msg))
+	else
+		io.stderr:write(string.format("(%s) %s\n", name, msg))
+	end
+end
+
+function luacomp.error(msg)
+	local inf = debug.getinfo(1)
+	local name = (inf and inf.short_src:match("[^/]+$"):gsub("^[=@]", "")) or "luacomp"
+	lc_error(name, msg)
+end
+
+function luacomp.warning(msg)
+	local inf = debug.getinfo(1)
+	local name = (inf and inf.short_src:match("[^/]+$"):gsub("^[=@]", "")) or "luacomp"
+	lc_warning(name, msg)
+end
+
 --#include "src/ast2.lua"
 --#include "src/generator2.lua"
 
