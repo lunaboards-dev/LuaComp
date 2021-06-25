@@ -46,9 +46,9 @@ do
 		fenv._G = fenv
 		fenv._GENERATOR = env
 		function fenv.call_directive(dname, ...)
-			if not directives[dname] then lc_error(@[{_GENERATOR.fname}], "invalid directive "..dname) end
+			if not directives[dname] then lc_error("@[{_GENERATOR.fname}]", "invalid directive "..dname) end
 			local r, er = directives[dname](env, ...)
-			if not r then lc_error(@[{_GENERATOR.fname}], er) end
+			if not r then lc_error("@[{_GENERATOR.fname}]", er) end
 		end
 
 		function fenv.write_out(code)

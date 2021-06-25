@@ -87,7 +87,7 @@ do
 	function ast.parser_error(str, err)
 		local y, x = str:get_yx()
 		--print(y, x)
-		lc_error(@[{_GENERATOR.fname}], string.format("%s(%d:%d): %s\n", str.file, y or 0, x or 0, err))
+		lc_error("@[{_GENERATOR.fname}]", string.format("%s(%d:%d): %s\n", str.file, y or 0, x or 0, err))
 	end
 
 	function ast.unescape(escaped_string)
@@ -114,8 +114,9 @@ do
 	function ast.remove_escapes(escaped_string)
 		local i = 1
 		local out_string = ""
-		while i < #escaped_string do
+		while i <= #escaped_string do
 			local c = escaped_string:sub(i,i)
+			--lc_warning(c, tostring(i).." "..#escaped_string)
 			if (c == "\\") then
 				i = i + 1
 			else
@@ -123,17 +124,19 @@ do
 			end
 			i = i + 1
 		end
+		--lc_warning("debug", out_string)
 		return out_string
 	end
 
 	function ast.back_escape_count(str, start)
-		local i=1
+		local i=2
 		while str:peek(-i):sub(1,1) == "\\" do
 			i = i + 1
 			if (str:tell()-i < start) then
 				ast.error(str, "internal error")
 			end
 		end
+		--lc_warning(tostring(i), #str:peek(1-i).." "..str:peek(1-i))
 		return str:peek(1-i)
 	end
 
@@ -152,7 +155,7 @@ do
 			end
 			str:set(rpos)
 			if str:peek(-1) == "\\" then
-				local parsed = ast.remove_escapes(ast.back_unescape(str))
+				local parsed = ast.remove_escapes(ast.back_escape_count(str, spos))
 				if parsed:sub(#parsed) == "\'" then
 					goto found_end
 				end
@@ -183,14 +186,16 @@ do
 				end
 			end
 			str:set(rpos)
-			if str:peek(-1) == "\\" then
-				local parsed = ast.remove_escapes(ast.back_unescape(str))
+			--lc_warning(str:peek(-2), "test")
+			if str:peek(-2):sub(1,1) == "\\" then
+				local parsed = ast.remove_escapes(ast.back_escape_count(str, spos))
 				if parsed:sub(#parsed) == "\"" then
 					goto found_end
 				end
 			else
 				goto found_end
 			end
+			--str:set(rpos)
 		end
 		::found_end::
 		local epos = str:tell()
