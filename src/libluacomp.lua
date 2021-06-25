@@ -5,13 +5,17 @@
 
 local luacomp = {}
 
+if arg and arg[0] == "luacomp" then
+	_G.luacomp = luacomp
+end
+
 local directives = {}
 
 local unistd = require("posix.unistd")
 
 local function lc_error(name, msg)
 	if unistd.isatty(2) then
-		io.stderr:write(string.format("\27[90;1m(%s) \27[31;22m%s\27[0m\n", name, msg))
+		io.stderr:write(string.format("\27[90;1m(%s) \27[31merror: \27[22m%s\27[0m\n", name, msg))
 	else
 		io.stderr:write(string.format("(%s) %s\n", name, msg))
 	end
@@ -20,7 +24,7 @@ end
 
 local function lc_warning(name, msg)
 	if unistd.isatty(2) then
-		io.stderr:write(string.format("\27[90;1m(%s) \27[33;22m%s\27[0m\n", name, msg))
+		io.stderr:write(string.format("\27[90;1m(%s) \27[33mwarning: \27[22m%s\27[0m\n", name, msg))
 	else
 		io.stderr:write(string.format("(%s) %s\n", name, msg))
 	end

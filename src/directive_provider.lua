@@ -10,6 +10,7 @@
 --#include "src/directives/include.lua"
 --#include "src/directives/loadmod.lua"
 --#include "src/directives/error.lua"
+--#include "src/directives/warning.lua"
 
 setmetatable(directives, {__index=function(t, i)
    for i=1, #directive_paths do
