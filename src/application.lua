@@ -2,24 +2,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-local function dprint(...)
-	local args = {...}
-	for i=1, #args do
-		args[i] = tostring(args[i])
-	end
-	if (false) then
-		io.stderr:write("DEBUG\t"..table.concat(args,"\t"),"\n")
-	end
-end
-
-local stat = require("posix.sys.stat")
-local dirent = require("posix.dirent")
-
---#include "src/shell_var.lua"
---#include "src/luacomp_vars.lua"
 --#include "src/libluacomp.lua"
---#include "src/directive_provider.lua"
---#include "src/cfg/minifier_providers.lua"
 
 local parser = argparse(arg[0]:match("[^/]+$"), "LuaComp v"..LUACOMP_VERSION.."\nA preprocessor+postprocessor written in Lua.")
 parser:argument("input", "Input file (- for STDIN)")

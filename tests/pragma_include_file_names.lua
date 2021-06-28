@@ -1,0 +1,5 @@
+--#pragma "include_file_name" "y"
+--#include "nopreproc.lua"
+--#include "lua_test.lua"
+--#include "shell.lua"
+--#include "warning.lua"

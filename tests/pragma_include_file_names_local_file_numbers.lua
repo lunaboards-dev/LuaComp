@@ -1,0 +1,6 @@
+--#pragma "include_file_name" "y"
+--#pragma "prefix_local_file_numbers" "y"
+--#include "nopreproc.lua"
+--#include "lua_test.lua"
+--#include "shell.lua"
+--#include "warning.lua"

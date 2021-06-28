@@ -41,7 +41,16 @@ do
 	end
 
 	function generator.run_gcode(fname, gcode)
-		local env = {code = "", fname=fname}
+		fname = fname or "(unknown)"
+		local env = {
+			code = "",
+			fname = fname,
+			pragmas = {
+				include_file_name = "n",
+				prefix_local_file_numbers = "n",
+				wrap_includes = "n"
+			}
+		}
 		local fenv = {}
 		for k, v in pairs(_G) do
 			fenv[k] = v
@@ -51,7 +60,7 @@ do
 		function fenv.call_directive(dname, ...)
 			if not directives[dname] then lc_error("@[{_GENERATOR.fname}]", "invalid directive "..dname) end
 			local r, er = directives[dname](env, ...)
-			if not r then lc_error("@[{_GENERATOR.fname}]", er) end
+			if not r then lc_error("directive "..dname, er) end
 		end
 
 		function fenv.write_out(code)

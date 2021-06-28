@@ -10,6 +10,6 @@ end
 
 _sv("LUACOMP_V_MAJ", 2)
 _sv("LUACOMP_V_MIN", 0)
-_sv("LUACOMP_V_PAT", 2)
+_sv("LUACOMP_V_PAT", 3)
 _sv("LUACOMP_VERSION", LUACOMP_V_MAJ.."."..LUACOMP_V_MIN.."."..LUACOMP_V_PAT)
 _sv("LUACOMP_NAME", "LuaComp")
