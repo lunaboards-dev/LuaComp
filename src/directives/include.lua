@@ -12,7 +12,7 @@ function directives.include(env, file, asmod)
 	env.code = env.code .. code .. "\n"]]
 	if asmod then env.code = env.code .. "local "..asmod.." = (function()\n" end
 	if env.pragmas.include_file_name == "y" then
-		env.code = env.code .. "-- " .. file .. "\n"
+		env.code = env.code .. "-- BEGIN " .. file .. "\n"
 	end
 	local code = luacomp.process_file(file, file) .. "\n"
 	if env.pragmas.prefix_local_file_numbers == "y" then
@@ -25,6 +25,9 @@ function directives.include(env, file, asmod)
 		code = newcode
 	end
 	env.code = env.code .. code
+	if env.pragmas.include_file_name == "y" then
+		env.code = env.code .. "-- END " .. file .. "\n"
+	end
 	if asmod then env.code = env.code .. "end)()\n" end
 	return true
 end

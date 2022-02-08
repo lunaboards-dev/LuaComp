@@ -386,6 +386,19 @@ do
 		return ematch
 	end
 
+	function ast.add_debugging_info(list, str, sx, sy)
+		if DEBUGGING then
+			local node = list[#list]
+			node.sx = sx
+			node.sy = sy
+			node.ey, node.ex = str:get_yx()
+			node.file = str.file
+			if not str.file then
+				luacomp.error("Node has no file!\n"..debug.traceback())
+			end
+		end
+	end
+
 	-- And now we parse
 	function ast.parse(str)
 		local cast = {}
@@ -408,11 +421,13 @@ do
 					end
 				end
 				return true
-			end, "--#", "$".."[[", "@".."[[", "$".."[{", "@".."[{", "$".."(") -- trust me, this was needed
+			end, "--".."#", "$".."[[", "@".."[[", "$".."[{", "@".."[{", "$".."(", "//".."##") -- trust me, this was needed
 			--dprint("searched")
+			local sy, sx = str:get_yx()
 			if not match then
 				--dprint("not found")
 				table.insert(cast, {type="content", val=str:next(str:size())})
+				ast.add_debugging_info(cast, str, sx, sy)
 				break
 			end
 			local epos = str:tell()
@@ -422,11 +437,12 @@ do
 				local chunk = str:next(size)
 				if not chunk:match("^%s+$") then
 					table.insert(cast, {type="content", val=chunk})
+					ast.add_debugging_info(cast, str, sx, sy)
 				end
 				str:skip(#match)
 			end
 			--dprint("match: "..match)
-			if match == "--#" then
+			if match == "--".."#" or match == "//".."##" then
 				--str:skip(3)
 				table.insert(cast, ast.parse_directive(str))
 			elseif match == "$".."[[" then
@@ -446,9 +462,10 @@ do
 				local var = ast.parse_envvar(str)
 				table.insert(cast, {type="evar", val=var})
 			else
-				ast.parser_error(str, "what")
+				ast.parser_error(str, "internal compiler error")
 			end
 			--dprint("Parsed")
+			ast.add_debugging_info(cast, str, sx, sy)
 		end
 
 		return cast

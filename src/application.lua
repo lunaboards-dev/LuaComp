@@ -4,11 +4,14 @@
 
 --#include "src/libluacomp.lua"
 
+__DSYM = {}
+
 local parser = argparse(arg[0]:match("[^/]+$"), "LuaComp v"..LUACOMP_VERSION.."\nA preprocessor+postprocessor written in Lua.")
 parser:argument("input", "Input file (- for STDIN)")
 parser:option("-O --output", "Output file. (- for STDOUT)", "-")
 parser:option("-m --minifier", "Sets the postprocessor", "none")
 parser:option("-x --executable", "Makes the script an executable (default: current lua version)"):args "?"
+parser:flag("-g --debugging", "Adds inline debugging utils to assist in debugging."):action(function() DEBUGGING=true end)
 parser:flag("--generator-code", "Outputs only the code from the generator.")
 parser:flag("--verbose", "Verbose output. (Debugging)"):action(function() VERBOSE=true end)
 parser:flag("--post-processors", "Lists postprocessors"):action(function()
@@ -48,6 +51,35 @@ else
 	f = io.stdin
 end
 local ocode = luacomp.process_file(f, (file == "-") and "stdin" or file, args.generator_code)
+if DEBUGGING then
+	-- generate debugging symbols
+	local dsyms = {"LEM:LCDEBUG!!!"}
+	for i=1, #__DSYM do
+		local sym = __DSYM[i]
+		local sym_str = string.format("FILE[%s]:START[%d,%d]:END[%d:%d]:FILE[%d,%d]", sym.file, sym.sx or 0, sym.sy or 0, sym.ex or 0, sym.ey or 0, sym.fx or -1, sym.fy or -1)
+		if sym.tag then
+			sym_str = sym_str .. ":"..sym.tag
+		end
+		table.insert(dsyms, sym_str)
+	end
+	ocode = ocode .. "\n--[["..table.concat(dsyms, "\n").."\n]]"
+end
+
+if DEBUGGING then
+	local dsymt = {}
+	for i=1, #__DSYM do
+		local sym = __DSYM[i]
+		local symstr = string.format("file=%q,sx=%q,sy=%q,ex=%q,ey=%q,fx=%q,fy=%q", sym.file, sym.sx or 0, sym.sy or 0, sym.ex or 0, sym.ey or 0, sym.fx or -1, sym.fy or -1)
+		if sym.tagv then
+			for i=1, #sym.tagv.vals do
+				sym.tagv.vals[i]=string.format("%q", sym.tagv.vals[i])
+			end
+			symstr = symstr .. ",tag={" ..string.format("type=%q,vals={%s}", sym.tagv.type, table.concat(sym.tagv.vals, ",")).."}"
+		end
+		table.insert(dsymt,"{"..symstr.."}")
+	end
+	ocode = "_G['LCDEBUG!!!'] = {\n"..table.concat(dsymt, ",\n").."\n}\n" .. ocode
+end
 
 local minifier = providers[args.minifier]
 dprint("Minifier: "..args.minifier, minifier)

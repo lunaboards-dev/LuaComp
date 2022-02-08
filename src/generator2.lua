@@ -10,6 +10,23 @@ do
 		local gcode = ""
 		for i=1, #ast do
 			local leaf = ast[i]
+			if DEBUGGING then
+				if not leaf.file then
+					local linfo = {}
+					for k, v in pairs(leaf) do
+						table.insert(linfo, tostring(k).."\t"..tostring(v))
+					end
+					luacomp.error("Node has no file!\n"..debug.traceback().."\n"..table.concat(linfo, "\n"))
+				end
+				table.insert(__DSYM, {
+					sx = leaf.sx,
+					sy = leaf.sy,
+					ex = leaf.ex,
+					ey = leaf.ey,
+					file = leaf.file
+				})
+				gcode = gcode .. string.format("push_debuginfo(%d)\n", #__DSYM)
+			end
 			if leaf.type == "directive" then
 				gcode = gcode .. string.format("call_directive(%q,", leaf.name)
 				local pargs = {}
@@ -57,14 +74,49 @@ do
 		end
 		fenv._G = fenv
 		fenv._GENERATOR = env
+		local lsym
+		function fenv.push_debuginfo(idx)
+			local ent = __DSYM[idx]
+			local linecount = 0
+			for l in env.code:gmatch("[^\n]*") do
+				linecount = linecount+1
+			end
+			local x = 1
+			while true do
+				x = x + 1
+				local c = env.code:sub(#env.code-x, #env.code-x)
+				if c == "\n" or c == "" then
+					break
+				end
+			end
+			ent.fx = x-1
+			ent.fy = linecount
+			if lsym then
+				local lent = __DSYM[idx]
+				lent.fey = ent.fy
+			end
+			lsym = idx
+		end
+
+		local function debug_add_tag(ttype, ...)
+			local alist = table.pack(...)
+			for i=1, #alist do
+				alist[i] = tostring(alist[i])
+			end
+			__DSYM[lsym].tag = string.format("TYPE[%s=%s]", ttype, table.concat(alist,","))
+			__DSYM[lsym].tagv = {type=ttype, vals=table.pack(...)}
+		end
+		
 		function fenv.call_directive(dname, ...)
 			if not directives[dname] then lc_error("@[{_GENERATOR.fname}]", "invalid directive "..dname) end
 			local r, er = directives[dname](env, ...)
 			if not r then lc_error("directive "..dname, er) end
+			debug_add_tag("CALL_DIR", dname, ...)
 		end
 
 		function fenv.write_out(code)
 			env.code = env.code .. code
+			debug_add_tag("CODE", #tostring(code))
 		end
 
 		function fenv.shell_write(cmd)
@@ -73,11 +125,17 @@ do
 			f:write(cmd)
 			f:close()
 			local h = io.popen(os.getenv("SHELL").." "..tmpname, "r")
-			env.code = env.code .. h:read("*a")
+			local r = h:read("*a"):gsub("%s+$", ""):gsub("^%s+", "")
+			env.code = env.code .. r
 			h:close()
+			debug_add_tag("SHELL", cmd, #r)
 		end
 
 		assert(load(gcode, "="..fname, "t", fenv))()
+
+		if DEBUGGING then
+
+		end
 
 		return env.code
 	end
