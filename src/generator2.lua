@@ -99,6 +99,7 @@ do
 		end
 
 		local function debug_add_tag(ttype, ...)
+			if not DEBUGGING then return end
 			local alist = table.pack(...)
 			for i=1, #alist do
 				alist[i] = tostring(alist[i])
