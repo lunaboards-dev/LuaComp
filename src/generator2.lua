@@ -65,7 +65,8 @@ do
 			pragmas = {
 				include_file_name = "n",
 				prefix_local_file_numbers = "n",
-				wrap_includes = "n"
+				wrap_includes = "n",
+				relative_include = "n"
 			}
 		}
 		local fenv = {}

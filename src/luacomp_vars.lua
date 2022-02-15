@@ -13,3 +13,7 @@ _sv("LUACOMP_V_MIN", 0)
 _sv("LUACOMP_V_PAT", 4)
 _sv("LUACOMP_VERSION", LUACOMP_V_MAJ.."."..LUACOMP_V_MIN.."."..LUACOMP_V_PAT)
 _sv("LUACOMP_NAME", "LuaComp")
+
+luacomp.experimental = {
+	relative_include = false
+}

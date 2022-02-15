@@ -11,6 +11,7 @@ local pragma_hooks = {
 }
 
 function directives.pragma(env, key, value)
+	--luacomp.warning(key.."\t"..value)
 	if not env.pragmas[key] then
 		return nil, "unknown pragma "..key
 	end
