@@ -1,0 +1,3 @@
+[submodule "libpreproc"]
+	path = libpreproc
+	url = git@github.com:lunaboards-dev/libpreproc.git
